@@ -105,16 +105,13 @@ void readMuxButtons() {
       }
       switch(i){
         case 0:{
-          //MIDI.disconnectCallbackFromType(midi::Clock);
           handleClockKickState = false;
-          MUXBUTTONS[4]->LEDState = false;
-          MUXBUTTONS[4]->updatePressedState(false);
+          MUXBUTTONS[4]->updateState(false);
           MIDI.sendControlChange(80, 96, midi_channel); 
           MIDI.sendControlChange(80, 32, midi_channel);
           if(!MUXBUTTONS[0]->getPressedState()){ 
             MUXBUTTONS[0]->LEDState = false;
-            MUXBUTTONS[1]->LEDState = false;
-            MUXBUTTONS[1]->updatePressedState(false);
+            MUXBUTTONS[1]->updateState(false);
           }
 
           else if(MUXBUTTONS[0]->getPressedState()){
@@ -126,12 +123,9 @@ void readMuxButtons() {
           break;
         }
         case 1:{
-          //MIDI.disconnectCallbackFromType(midi::Clock);
           handleClockKickState = false;
-          MUXBUTTONS[4]->LEDState = false;
-          MUXBUTTONS[4]->updatePressedState(false);
-          MIDI.sendControlChange(81, 96, midi_channel); 
-          MIDI.sendControlChange(81, 32, midi_channel);
+          MUXBUTTONS[4]->updateState(false);
+          sendCCOnOff(81);
           if(!MUXBUTTONS[0]->getPressedState()){ 
             MUXBUTTONS[1]->LEDState = MUXBUTTONS[1]->getPressedState();
           }
@@ -140,21 +134,14 @@ void readMuxButtons() {
           break;
         }
         case 2:{
-          //MIDI.disconnectCallbackFromType(midi::Clock);
           handleClockKickState = false;
-          MUXBUTTONS[4]->LEDState = false;
-          MUXBUTTONS[4]->updatePressedState(false);
+          MUXBUTTONS[4]->updateState(false);
           if(MUXBUTTONS[0]->getPressedState()){
-            // turn off track if its on
-            MIDI.sendControlChange(80, 96, midi_channel); 
-            MIDI.sendControlChange(80, 32, midi_channel);
-            MUXBUTTONS[0]->LEDState = false;
+            sendCCOnOff(80);
+            MUXBUTTONS[0]->updateState(false);
             MUXBUTTONS[1]->LEDState = false;
-            MUXBUTTONS[0]->updatePressedState(false);
           }
-          // start rhythmm
-          MIDI.sendControlChange(81, 96, midi_channel); 
-          MIDI.sendControlChange(81, 32, midi_channel);
+          sendCCOnOff(81);
           MUXBUTTONS[1]->updatePressedState(true);
           MUXBUTTONS[2]->LEDState = true;
           MUXBUTTONS[4]->LEDState = false;
@@ -163,9 +150,7 @@ void readMuxButtons() {
         case 3:{
           if(MUXBUTTONS[0]->getPressedState() && measureCount == 0){
             MUXBUTTONS[3]->LEDState = true;
-            MIDI.sendControlChange(80, 96, midi_channel); 
-            MIDI.sendControlChange(80, 32, midi_channel);
-            //MIDI.setHandleClock(handleClockMeasure);
+            sendCCOnOff(80);
             handleClockMeasureState = true;
           }
           break;
@@ -173,28 +158,21 @@ void readMuxButtons() {
         case 4:{
           // lets make our best effort to turn the track and drums off if we can
           if(MUXBUTTONS[0]->getPressedState()){
-              MIDI.sendControlChange(80, 96, midi_channel); 
-              MIDI.sendControlChange(80, 32, midi_channel);
-              MUXBUTTONS[0]->LEDState = false;
-              MUXBUTTONS[0]->updatePressedState(false);
+              sendCCOnOff(80);
+              MUXBUTTONS[0]->updateState(false);
            }
            else if(!MUXBUTTONS[0]->getPressedState() && MUXBUTTONS[1]->getPressedState()){
-              MIDI.sendControlChange(81, 96, midi_channel); 
-              MIDI.sendControlChange(81, 32, midi_channel);
-              MUXBUTTONS[1]->LEDState = false;
+              sendCCOnOff(81);
+              MUXBUTTONS[1]->updateState(false);
               MUXBUTTONS[2]->LEDState = false;
-              MUXBUTTONS[1]->updatePressedState(false);
            }
            MUXBUTTONS[2]->updatePressedState(false);
-           //MIDI.setHandleClock(handleClockKick);
            handleClockKickState = MUXBUTTONS[4]->getPressedState();
            MUXBUTTONS[4]->LEDState = MUXBUTTONS[4]->getPressedState();
            break;
         }
         case 5:{
-
-          MIDI.sendControlChange(82, 96, midi_channel); 
-          MIDI.sendControlChange(82, 32, midi_channel);
+          sendCCOnOff(82);
           break;
           
         }
@@ -213,57 +191,41 @@ void readMuxButtons() {
           if(MUXBUTTONS[11]->getPressedState() and rhythmMode){
             switch(i){
               case 7:{ //84 - 87
-                MIDI.sendControlChange(85, 0, midi_channel);
-                MIDI.sendControlChange(86, 0, midi_channel);
-                MIDI.sendControlChange(87, 0, midi_channel);
-                MUXBUTTONS[8]->updatePressedState(false);
-                MUXBUTTONS[8]->LEDState = false;
-                MUXBUTTONS[9]->updatePressedState(false);
-                MUXBUTTONS[9]->LEDState = false; 
-                MUXBUTTONS[10]->updatePressedState(false);
-                MUXBUTTONS[10]->LEDState = false;
+                MIDI.sendControlChange(84, 74, midi_channel);
+                sendCC(new int[3]{85,86,87}, 3, 0);
+                MUXBUTTONS[8]->updateState(false); 
+                MUXBUTTONS[9]->updateState(false);
+                MUXBUTTONS[10]->updateState(false);
 
                 MUXBUTTONS[7]->LEDState = true;
                 break;
               }
               case 8:{
-                MIDI.sendControlChange(84, 0, midi_channel);
-                MIDI.sendControlChange(86, 0, midi_channel);
-                MIDI.sendControlChange(87, 0, midi_channel);
-                MUXBUTTONS[7]->updatePressedState(false);
-                MUXBUTTONS[7]->LEDState = false;
-                MUXBUTTONS[9]->updatePressedState(false);
-                MUXBUTTONS[9]->LEDState = false;
-                MUXBUTTONS[10]->updatePressedState(false);
-                MUXBUTTONS[10]->LEDState = false;
+                MIDI.sendControlChange(85, 74, midi_channel);
+                sendCC(new int[3]{84,86,87}, 3, 0);
+                MUXBUTTONS[7]->updateState(false);
+                MUXBUTTONS[9]->updateState(false);
+                MUXBUTTONS[10]->updateState(false);
 
                 MUXBUTTONS[8]->LEDState = true;
                 break;
               }
               case 9:{
-                MIDI.sendControlChange(84, 0, midi_channel);
-                MIDI.sendControlChange(85, 0, midi_channel);
-                MIDI.sendControlChange(87, 0, midi_channel);
-                MUXBUTTONS[7]->updatePressedState(false);
-                MUXBUTTONS[7]->LEDState = false;
-                MUXBUTTONS[8]->updatePressedState(false);
-                MUXBUTTONS[8]->LEDState = false;
-                MUXBUTTONS[10]->updatePressedState(false);
-                MUXBUTTONS[10]->LEDState = false;   
+                MIDI.sendControlChange(86, 74, midi_channel);
+                sendCC(new int[3]{84,85,87}, 3, 0);
+                MUXBUTTONS[7]->updateState(false);
+                MUXBUTTONS[8]->updateState(false);
+                MUXBUTTONS[10]->updateState(false);
                 
                 MUXBUTTONS[9]->LEDState = true;                             
                 break;
               }
               case 10:{
-                MIDI.sendControlChange(84, 0, midi_channel);
-                MIDI.sendControlChange(85, 0, midi_channel);
-                MIDI.sendControlChange(86, 0, midi_channel);
-                MUXBUTTONS[7]->updatePressedState(false);
-                MUXBUTTONS[7]->LEDState = false;
-                MUXBUTTONS[8]->updatePressedState(false);
-                MUXBUTTONS[8]->LEDState = false;
-                MUXBUTTONS[9]->updatePressedState(false);
-                MUXBUTTONS[9]->LEDState = false;
+                MIDI.sendControlChange(87, 74, midi_channel);
+                sendCC(new int[3]{84,85,86}, 3, 0);
+                MUXBUTTONS[7]->updateState(false);
+                MUXBUTTONS[8]->updateState(false);
+                MUXBUTTONS[9]->updateState(false);
                 
                 MUXBUTTONS[10]->LEDState = true;                
                 break;
@@ -289,21 +251,13 @@ void readMuxButtons() {
             rhythmMode = true;
           }
           else{
-              MIDI.sendControlChange(84, 74, midi_channel);
-              MIDI.sendControlChange(85, 74, midi_channel);
-              MIDI.sendControlChange(86, 74, midi_channel);
-              MIDI.sendControlChange(87, 74, midi_channel);
+              sendCC(new int[4]{84, 85, 86, 87}, 4, 74);
               MUXBUTTONS[i]->LEDState = false;
 
-              MUXBUTTONS[7]->LEDState = true;
-              MUXBUTTONS[8]->LEDState = true;
-              MUXBUTTONS[9]->LEDState = true;
-              MUXBUTTONS[10]->LEDState = true;
-              
-              MUXBUTTONS[7]->updatePressedState(true);
-              MUXBUTTONS[8]->updatePressedState(true);
-              MUXBUTTONS[9]->updatePressedState(true);
-              MUXBUTTONS[10]->updatePressedState(true);
+              MUXBUTTONS[7]->updateState(true);
+              MUXBUTTONS[8]->updateState(true);
+              MUXBUTTONS[9]->updateState(true);
+              MUXBUTTONS[10]->updateState(true);
               rhythmMode = false;
           }
           break;
@@ -316,36 +270,6 @@ void readMuxButtons() {
     if (message == 1) {
     }
     setLedState();
-  }
-}
-
-void handleClockMeasure(void){
-  measureCount += 1;
-  // one measure or 4 quarter notes has elapsed
-  if(measureCount % 24 == 0){
-    MIDI.sendNoteOn(42, 100, midi_channel); // high hat
-  }
-  if(measureCount - 96 == 0){
-      MIDI.sendControlChange(80, 96, midi_channel); 
-      MIDI.sendControlChange(80, 32, midi_channel);
-      MUXBUTTONS[0]->LEDState = true;
-      MUXBUTTONS[1]->LEDState = false;
-      MUXBUTTONS[2]->LEDState = false;
-      MUXBUTTONS[3]->LEDState = false;
-      MUXBUTTONS[0]->updatePressedState(true);
-      MIDI.disconnectCallbackFromType(midi::Clock);
-      setLedState();
-      measureCount = 0;
-  }
-  
-}
-
-void handleClockKick(void){
-  kickCount += 1;
-  if(kickCount - 24 == 0){
-    MIDI.sendNoteOn(36, 100, midi_channel); // kick drum
-    MIDI.sendNoteOn(42, 90, midi_channel); // high hat
-    kickCount = 0;
   }
 }
 
@@ -372,18 +296,27 @@ void handleClock(void){
       MIDI.sendNoteOn(42, 100, midi_channel); // high hat
     }
     if(measureCount - 96 == 0){
-        MIDI.sendControlChange(80, 96, midi_channel); 
-        MIDI.sendControlChange(80, 32, midi_channel);
+        sendCCOnOff(80);
         MUXBUTTONS[0]->LEDState = true;
         MUXBUTTONS[1]->LEDState = false;  
         MUXBUTTONS[2]->LEDState = false;
         MUXBUTTONS[3]->LEDState = false;
         MUXBUTTONS[0]->updatePressedState(true);
-        //MIDI.disconnectCallbackFromType(midi::Clock);
         setLedState();
         measureCount = 0;
         handleClockMeasureState = false;
     }
+  }
+}
+
+void sendCCOnOff(int ccNumber){
+      MIDI.sendControlChange(ccNumber, 96, midi_channel); 
+      MIDI.sendControlChange(ccNumber, 32, midi_channel);
+}
+
+void sendCC(int arr[], int size, int ccValue){
+  for(int i = 0; i< size; i++){
+      MIDI.sendControlChange(arr[i], ccValue, midi_channel);
   }
 }
 
