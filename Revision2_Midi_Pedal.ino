@@ -84,6 +84,7 @@ void lightShowAndSetupInitialLightStates(){
   {
     setUpStates();
     lightCounter = lightCounter + 1;
+    return;
   }
   MUXBUTTONS[lightCounter]->LEDState = lightOn;
   delay(250);
@@ -104,7 +105,7 @@ void setUpStates(){
   MIDI.sendControlChange(86, 74, midi_channel);
   MIDI.sendControlChange(87, 74, midi_channel);
   for(int i = 0; i <= 15; i++){
-    if(i == 5 || i == 11) {
+    if(i == 5) {
       MUXBUTTONS[i]->LEDState = true;
       continue;
     }
@@ -307,9 +308,12 @@ void readMuxButtons() {
            
            break;
         } 
-        // tap tempo
-        case 11:{
-          sendCCOnOff(82);
+        // random kit and rhythm
+        case 11:{ //
+          int kit = random(15);
+          int pattern = random(57);
+          MIDI.sendControlChange(80, kits[kit], midi_channel);
+          MIDI.sendControlChange(82, patterns[pattern], midi_channel);
           break;
         }
 
