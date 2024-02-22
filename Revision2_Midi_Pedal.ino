@@ -333,7 +333,6 @@ void readMuxButtons() {
   }
 }
 
-
 void sendCCOnOff(int ccNumber){
       MIDI.sendControlChange(ccNumber, 96, midi_channel); 
       MIDI.sendControlChange(ccNumber, 32, midi_channel);
@@ -356,6 +355,7 @@ void setLedState(){
   }
 }
 
+// closer to random with each press
 void setRandomSeed(){
   unsigned long current_time = millis();
   unsigned long time_diff = current_time - start_Time_For_Random_Seed;
