@@ -62,11 +62,13 @@ Button *MUXBUTTONS[] {&MBU1,&MBU2,&MBU3,&MBU4,&MBU5,&MBU6,&MBU7,&MBU8,&MBU9,&MBU
 
 //*******************************************************************
 
+unsigned long start_Time_For_Random_Seed = 0;
 
 void setup() {
   //Serial.begin(9600);
   MIDI.begin(MIDI_CHANNEL_OMNI);
   Mux_Led.signalPin(10, OUTPUT, DIGITAL);
+  start_Time_For_Random_Seed = millis();
   //setUpStates();
 }
 
@@ -87,7 +89,7 @@ void lightShowAndSetupInitialLightStates(){
     return;
   }
   MUXBUTTONS[lightCounter]->LEDState = lightOn;
-  delay(250);
+  delay(350);
   if(lightCounter == 15){
     MUXBUTTONS[lightCounter]->LEDState = false;
   }
@@ -254,7 +256,9 @@ void readMuxButtons() {
           // 808 123
           // kits are as follow (16 total) {0, 5, 13, 22, 30, 39, 47, 56, 64, 72, 81, 89, 98, 106, 115, 123}
           
-            // patterns are as follow (58 total) {0, 2, 4, 6, 8, 11, 13, 15, 17, 19, 22, 24, 26, 28, 31, 33, 35, 37, 39, 42, 44, 46, 48, 51, 53, 55, 57, 60, 62, 64, 66, 68, 71, 73, 75, 77, 80, 82, 84, 86, 89, 91, 93, 95, 97, 100, 102, 104, 106, 109, 111, 113, 115, 117, 120, 122, 124, 126}
+            // patterns are as follow (58 total) {0, 2, 4, 6, 8, 11, 13, 15, 17, 19, 22, 24, 26, 28, 31, 33, 
+            // 35, 37, 39, 42, 44, 46, 48, 51, 53, 55, 57, 60, 62, 64, 66, 68, 71, 73, 75, 77, 80, 82, 84, 86, 
+            // 89, 91, 93, 95, 97, 100, 102, 104, 106, 109, 111, 113, 115, 117, 120, 122, 124, 126}
           // increase/decrease
           switch(i){
             case 7:{
@@ -310,14 +314,13 @@ void readMuxButtons() {
         } 
         // random kit and rhythm
         case 11:{ //
+          setRandomSeed();
           int kit = random(15);
           int pattern = random(57);
           MIDI.sendControlChange(80, kits[kit], midi_channel);
           MIDI.sendControlChange(82, patterns[pattern], midi_channel);
           break;
-        }
-
-        
+        }   
         
       }
       
@@ -351,4 +354,13 @@ void setLedState(){
         Mux_Led.write(MUXBUTTONS[i]->getMuxPin(), LOW);
       }
   }
+}
+
+void setRandomSeed(){
+  unsigned long current_time = millis();
+  unsigned long time_diff = current_time - start_Time_For_Random_Seed;
+  if(time_diff < 0){
+    time_diff = time_diff * -1;
+  }
+  randomSeed(current_time);
 }
